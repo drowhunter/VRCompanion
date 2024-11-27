@@ -1,5 +1,5 @@
 from .environment import environment
-
+from .mode_based_actions import Mode
 class HeadJoystickDirection:
     
     def __init__(self, isInverted, minDegrees, maxDegrees, minValue , maxValue, curve = None):
@@ -53,26 +53,33 @@ class HeadJoystick:
         #self.bJoyLookEnabled = False
         self.left  = HeadJoystickDirection(True, 0, 40, 0, 1)  
         self.right = HeadJoystickDirection(False,0, 40, 0, 1) 
-        self.up    = HeadJoystickDirection(True, 0, 25, 0, 1) 
-        self.down  = HeadJoystickDirection(False,0, 25, 0, 1) 
-        self._yaw = 0
-        self._pitch = 0
+        self.up    = HeadJoystickDirection(True, 0, 40, 0, 1) 
+        self.down  = HeadJoystickDirection(False,0, 40, 0, 1) 
+        self.__yaw = 0
+        self.__pitch = 0
+        self.mode = Mode() # 0: Off,1: Normal, 2: arc
         
     def update(self):
         # type: () -> None        
-        self.left.currentDegrees = self.right.currentDegrees = self._yaw = environment.vr.headPose.yaw
-        self.up.currentDegrees = self.down.currentDegrees = self._pitch = environment.vr.headPose.pitch
+        self.left.currentDegrees = self.right.currentDegrees = self.__yaw = environment.vr.headPose.yaw
+        if self.mode.current == 1:
+            self.up.currentDegrees = self.down.currentDegrees = self.__pitch = environment.vr.headPose.pitch
+        
         
     
     @property
     def x(self):
         #type: () -> float
-        return self.left.value if self._yaw < 0 else self.right.value if self._yaw > 0 else 0
+        return self.left.value if self.__yaw < 0 else self.right.value if self.__yaw > 0 else 0
     
     @property
     def y(self):
         #type: () -> float
-        return self.up.value if self._pitch < 0 else self.down.value if self._pitch > 0 else 0
+        if self.mode.current == 1:
+            return self.up.value if self.__pitch < 0 else self.down.value if self.__pitch > 0 else 0
+        elif self.mode.current == 2:
+            return environment.curves.arc(self.x)
+        return 0
 
     @property
     def isActive(self):

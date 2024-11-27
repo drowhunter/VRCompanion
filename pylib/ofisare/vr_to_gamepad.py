@@ -22,7 +22,7 @@ class VRToGamepad:
         self.rightTriggerMode = Mode()
         self.leftStickMode = Mode()
         self.rightStickMode = Mode()
-        self.headMode = Mode()
+        self.headMode = Mode() # 1: Normal, 2: Arc
         self.dpadMode = Mode()
         self.dpadThreshold = 0.3
         self.controller = None
@@ -60,6 +60,7 @@ class VRToGamepad:
             environment.vigem.SetStick(self.controller, environment.VigemSide.Left, environment.vr.rightStickAxes.x, environment.vr.rightStickAxes.y)
         
         if self.headMode.current == 1:
+            self.headJoy.mode.current = self.headMode.current
             self.headJoy.update()  
             if self.beforeUpdate is not None:
                 self.beforeUpdate(self)

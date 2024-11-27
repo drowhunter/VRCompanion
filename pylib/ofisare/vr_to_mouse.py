@@ -59,9 +59,7 @@ class VRToMouse:
                 self.deltaX = 0.0
                 self.deltaY = 0.0
                 # no mouse mapping
-                environment.freePieIO[0].yaw = 0
-                environment.freePieIO[0].pitch = 0
-                environment.freePieIO[0].roll = 0
+                self.reset()
             return
 
         yawTarget = self._yaw
@@ -152,8 +150,11 @@ class VRToMouse:
         if self.afterUpdate is not None:
             self.afterUpdate(self)
 
-        environment.mouse.deltaX = self.deltaX
-        environment.mouse.deltaY = self.deltaY
+        if self.deltaX > 0:
+            environment.mouse.deltaX = self.deltaX
+            
+        if self.deltaY > 0:   
+            environment.mouse.deltaY = self.deltaY
         
         # communicate to reshade
         if self.enableYawPitch.current:

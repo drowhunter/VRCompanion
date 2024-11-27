@@ -20,3 +20,5 @@ from .voice_commands import *
 from .vr_roomscale import *
 from .vr_to_gamepad import *
 from .vr_to_mouse import *
+from .vr_to_opentrack import *
+from .vr_headjoy import *
