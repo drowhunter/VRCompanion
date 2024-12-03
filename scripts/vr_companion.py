@@ -48,7 +48,7 @@ def __init_plugins__():
     keyboard.getPressed(Key.Space)
     vigem.CreateController(VigemController.XBoxController)
     vigem.SetButtonState(VigemButton.A, True)
-    x = curve.Name
+    
 
 
 #**************************************
@@ -74,6 +74,7 @@ def reset():
     global v2k
     global vrToMouse
     global vrToGamepad
+    global vrToOpenTrack
     global vrRoomscale
     global vrControllers
 
@@ -101,6 +102,7 @@ def reset():
     vrToMouse.reset()
     vrToGamepad.reset()
     vrRoomscale.reset()
+    
     for controller in vrControllers.values():
         controller.reset()
 
@@ -114,6 +116,7 @@ def update():
     global v2k
     global vrToMouse
     global vrToGamepad
+    global vrToOpenTrack
     global vrRoomscale
     global vrControllers
     
@@ -132,6 +135,9 @@ def update():
     # check vr updates
     vrToMouse.update(currentTime, deltaTime)
     vrToGamepad.update(currentTime, deltaTime)
+
+    vrToOpenTrack.update(currentTime, deltaTime)
+
     vrRoomscale.update(currentTime, deltaTime)
     
     for controller in vrControllers.values():
@@ -193,7 +199,8 @@ class SettingsForm(Form):
         userFiles = [file.replace("scripts\user_profiles\\", "") for file in glob.glob("scripts\user_profiles\*.py")]
         files = sorted(set(officialFiles + userFiles))
         for profile in files:
-        	self.profileCombo.Items.Add(profile.replace(".py", ""))        
+            self.profileCombo.Items.Add(profile.replace(".py", ""))
+        
         self.profileCombo.Dock = DockStyle.Top
         self.profileCombo.DropDownStyle = ComboBoxStyle.DropDownList        
                 
@@ -234,8 +241,8 @@ class SettingsForm(Form):
         self.Controls.Add(refreshLabel)
     
     def buttonPressed(self, sender, args):
-    	self.Close()
-    
+        self.Close()
+
     def updatePressed(self, sender, args):
         self.startButton.Enabled = False
         self.updateButton.Enabled = False
@@ -259,6 +266,7 @@ def selectProfile():
     global touchHapticsPlayer
     global vrToMouse
     global vrToGamepad
+    global vrToOpenTrack
     global vrRoomscale
     global vrControllers
     global profile
@@ -268,11 +276,11 @@ def selectProfile():
     settings = {}
     refreshRate = 60
     try:
-	    with open('scripts/vr_companion.json') as settingsFile:
-	        settings = json.loads(settingsFile.read())
-	        if settings != None:
-	        	if profile == None and "profile" in settings:
-	        		profile = settings["profile"]
+        with open('scripts/vr_companion.json') as settingsFile:
+            settings = json.loads(settingsFile.read())
+            if settings != None:
+                if profile == None and "profile" in settings:
+                    profile = settings["profile"]
                 if "refreshRate" in settings:
                     refreshRate = int(settings["refreshRate"])
     except:
@@ -419,7 +427,7 @@ def selectProfile():
     gestureTracker.lightRight.validationMode = GestureValidation_Delay
     gestureTracker.shoulderInventoryLeft.validationMode = GestureValidation_Delay
     gestureTracker.shoulderInventoryRight.validationMode = GestureValidation_Delay
-    gestureTracker.shoulderWeaponLeft.validationMode = GestureValidation_Delay
+    gestureTracker.shoulderWeaponLeft.validationMode = GestureValidation_Delay  
     gestureTracker.shoulderWeaponRight.validationMode = GestureValidation_Delay
     
     if not profile.endswith(".py"):
@@ -446,6 +454,7 @@ if starting:
     diagnostics.watch(diagnostics.version())
     diagnostics.watch(sys.version)
     
+
     LastUpdate = time.clock()                # last time an update happened
     
     environment.updateFrequency = 1.0 / 60.0            # interval between updates
@@ -455,12 +464,17 @@ if starting:
     environment.keyboard = KeyboardWrapper(keyboard)
     environment.speech = speech
     environment.vigem = vigem
+    environment.openTrack = openTrack
     environment.VigemSide = VigemSide
     environment.VigemAxis = VigemAxis
+    
     environment.filters = filters
+
+    #diagnostics.watch(environment.filters.ensureMapRange(vr.headPose.yaw, -40, 40, -1, 1), "ensureMapRange")
+
     environment.diagnostics = diagnostics
     environment.curves = curves
-    
+
     global profile
     if "profile" in globals():
         DebugOutput = False
@@ -542,10 +556,12 @@ if starting:
     vrToMouse = VRToMouse()
     vrToGamepad = VRToGamepad()
     vrRoomscale = VRRoomscale()
+    vrToOpenTrack = VRToOpenTrack()
     vrControllers = { "main": VirtualController() }
     
     environment.vrToMouse = vrToMouse
     environment.vrToGamepad = vrToGamepad
+    environment.vrToOpenTrack = vrToOpenTrack
     environment.vrRoomscale = vrRoomscale
     environment.vrControllers = vrControllers
     environment.hapticPlayer = hapticPlayer
@@ -570,13 +586,15 @@ if DebugOutput:
     diagnostics.watch(vr.headPose.yaw)
     diagnostics.watch(vr.headPose.pitch)
     diagnostics.watch(vr.headPose.roll)
-    diagnostics.watch(vr.leftTouchPose.position.x)
-    diagnostics.watch(vr.leftTouchPose.position.y)
-    diagnostics.watch(vr.leftTouchPose.position.z)
+
     
-    diagnostics.watch(vr.rightTouchPose.position.x)
-    diagnostics.watch(vr.rightTouchPose.position.y)
-    diagnostics.watch(vr.rightTouchPose.position.z)
+    # diagnostics.watch(vr.leftTouchPose.position.x)
+    # diagnostics.watch(vr.leftTouchPose.position.y)
+    # diagnostics.watch(vr.leftTouchPose.position.z)
+    
+    # diagnostics.watch(vr.rightTouchPose.position.x)
+    # diagnostics.watch(vr.rightTouchPose.position.y)
+    # diagnostics.watch(vr.rightTouchPose.position.z)
     
     diagnostics.watch(gestureSets.mode.current)
     diagnostics.watch(weaponInventory.current)

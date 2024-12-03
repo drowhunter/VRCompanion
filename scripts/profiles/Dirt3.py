@@ -1,4 +1,3 @@
-from ofisare.vr_headjoy import HeadJoystickDirection
 #****************************************************************
 # Enable headtracking via mouse movement for Forza games.
 # 
@@ -8,12 +7,5 @@ from ofisare.vr_headjoy import HeadJoystickDirection
 #
 # NOTE: Forza games dont actually support pitch for mouse look, so this script only uses yaw.
 #****************************************************************
-easeIn = curves.create(0.2, 0.9, 0.731, 0.544)
 
-vrToGamepad.setController(VigemController.XBoxController)
-vrToGamepad.headJoy.left  = HeadJoystickDirection(True,  5, 40, 0.2, 0.9) 
-vrToGamepad.headJoy.right = HeadJoystickDirection(False, 5, 40, 0.2, 0.9) 
-vrToGamepad.headJoy.up    = HeadJoystickDirection(True,  5, 40, 1, 0.2) 
-#vrToGamepad.headJoy.down  = HeadJoystickDirection(False, 40, 40, 0, 0.01) 
-vrToGamepad.headMode.current = 1
-#vrToGamepad.beforeUpdate = update
+vrToOpenTrack.mode.current = 1
