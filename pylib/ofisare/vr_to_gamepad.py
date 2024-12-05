@@ -59,14 +59,16 @@ class VRToGamepad:
         elif self.leftStickMode.current == 2:
             environment.vigem.SetStick(self.controller, environment.VigemSide.Left, environment.vr.rightStickAxes.x, environment.vr.rightStickAxes.y)
         
-        if self.headMode.current == 1:
+        if self.headMode.current > 0:
             self.headJoy.mode.current = self.headMode.current
-            self.headJoy.update()  
+            self.headJoy.update()
+            
             if self.beforeUpdate is not None:
                 self.beforeUpdate(self)
 
             if self.headJoy.isActive:
-                environment.vigem.SetStick(self.controller, environment.VigemSide.Right, self.headJoy.x, self.headJoy.y)        
+                environment.vigem.SetStick(self.controller, environment.VigemSide.Right, self.headJoy.x, self.headJoy.y)
+
         # map right stick to right stick
         if self.rightStickMode.current == 1:
             environment.vigem.SetStick(self.controller, environment.VigemSide.Right, environment.vr.leftStickAxes.x, environment.vr.leftStickAxes.y)

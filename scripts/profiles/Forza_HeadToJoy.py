@@ -8,12 +8,45 @@ from ofisare.vr_headjoy import HeadJoystickDirection
 #
 # NOTE: Forza games dont actually support pitch for mouse look, so this script only uses yaw.
 #****************************************************************
-easeIn = curves.create(0.2, 0.9, 0.731, 0.544)
+#easeInC = curves.create(0.2, 0.9, 0.731, 0.544)
+
+def befupdate(sender):
+    environment.diagnostics.watch(sender.headJoy.x, 'hx')
+    environment.diagnostics.watch(sender.headJoy.y, 'hy')
+    #tf = easeInC.getY(sender.headJoy.x)
+    #enviribment.diagnostics.watch(tf, 'tf')
 
 vrToGamepad.setController(VigemController.XBoxController)
-vrToGamepad.headJoy.left  = HeadJoystickDirection(True,  5, 40, 0.2, 0.9) 
-vrToGamepad.headJoy.right = HeadJoystickDirection(False, 5, 40, 0.2, 0.9) 
-vrToGamepad.headJoy.up    = HeadJoystickDirection(True,  5, 40, 1, 0.2) 
-#vrToGamepad.headJoy.down  = HeadJoystickDirection(False, 40, 40, 0, 0.01) 
-vrToGamepad.headMode.current = 1
-#vrToGamepad.beforeUpdate = update
+vrToGamepad.headJoy.left  = HeadJoystickDirection(True,  1, 40, 0.1, 0.95) 
+vrToGamepad.headJoy.right = HeadJoystickDirection(False, 1, 40, 0.1, 0.95) 
+vrToGamepad.headJoy.up.enabled    = False #HeadJoystickDirection(True,  5, 40, 1, 0.2) 
+vrToGamepad.headJoy.down.enabled  = False #HeadJoystickDirection(False, 40, 40, 0, 0.01) 
+vrToGamepad.headMode.current = 2
+vrToGamepad.beforeUpdate = befupdate
+
+
+vrToGamepad.leftTriggerMode.current = 1
+vrToGamepad.rightTriggerMode.current = 2
+
+gestureTracker.gripLeft.enabled = True
+gestureTracker.gripLeft.action = GamepadPress(VigemButton.ShoulderLeft)
+gestureTracker.gripRight.enabled = True
+gestureTracker.gripRight.action = GamepadPress(VigemButton.ShoulderRight)
+
+vrToGamepad.leftStickMode.current = 1
+vrToGamepad.rightStickMode.current = 0
+
+gestureTracker.buttonLeftStick.enabled = True
+gestureTracker.buttonLeftStick.action = GamepadPress(VigemButton.ThumbLeft)
+gestureTracker.buttonRightStick.enabled = False
+gestureTracker.buttonRightStick.action = GamepadPress(VigemButton.ThumbRight)
+
+gestureTracker.buttonA.enabled = True
+gestureTracker.buttonA.action = GamepadPress(VigemButton.A)
+gestureTracker.buttonB.enabled = True
+gestureTracker.buttonB.action = GamepadPress(VigemButton.B)
+
+gestureTracker.buttonX.enabled = True
+gestureTracker.buttonX.action = GamepadPress(VigemButton.X)
+gestureTracker.buttonY.enabled = True
+gestureTracker.buttonY.action = GamepadPress(VigemButton.Y)

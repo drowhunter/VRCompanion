@@ -20,7 +20,7 @@ class HeadJoystickDirection:
         self.minValue = abs(minValue)
         self.maxValue = abs(maxValue)
         self.curve = curve
-
+        self.enabled = True
         self.currentDegrees = 0.0
         
     @property
@@ -28,13 +28,13 @@ class HeadJoystickDirection:
         # type: () -> float
         retval = 0.0
         #minDegrees = self.maxDegrees * self.deadZone
-        if not self.isActive:
+        if not self.isActive or not self.enabled:
             retval = 0
         else:
             retval = environment.filters.ensureMapRange(abs(self.currentDegrees), self.minDegrees, self.maxDegrees, self.minValue, self.maxValue)
         
-        if(self.curve is not None):
-            #environment.diagnostics.debug("Curve is not None")
+        if self.curve is not None:
+            environment.diagnostics.debug("Curve is not None")
             retval = self.curve.getY(retval)
 
         if self.isInverted:
@@ -45,7 +45,7 @@ class HeadJoystickDirection:
     @property
     def isActive(self):
     # type: (float) -> bool
-        return abs(self.currentDegrees) > self.minDegrees
+        return self.enabled and abs(self.currentDegrees) > self.minDegrees
     
 class HeadJoystick:
     
@@ -78,7 +78,9 @@ class HeadJoystick:
         if self.mode.current == 1:
             return self.up.value if self.__pitch < 0 else self.down.value if self.__pitch > 0 else 0
         elif self.mode.current == 2:
-            return environment.curves.arc(self.x)
+            yy = environment.curves.arc(self.x)
+            environment.diagnostics.watch(yy, "ArcY")
+            return yy
         return 0
 
     @property
